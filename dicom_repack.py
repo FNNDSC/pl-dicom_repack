@@ -24,9 +24,9 @@ parser = ArgumentParser(description='!!!CHANGE ME!!! An example ChRIS plugin whi
                                     'counts the number of occurrences of a given '
                                     'word in text files.',
                         formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument('-w', '--word', required=True, type=str,
-                    help='word to count')
-parser.add_argument('-p', '--pattern', default='**/*.txt', type=str,
+parser.add_argument('-f', '--fileFilter', default='dcm', type=str,
+                    help='input file filter glob')
+parser.add_argument('-t', '--outputType', default='dcm', type=str,
                     help='input file filter glob')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
@@ -64,15 +64,21 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     #
     # Refer to the documentation for more options, examples, and advanced uses e.g.
     # adding a progress bar and parallelism.
-    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=options.pattern, suffix='.count.txt')
+    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=f"**/*.{options.fileFilter}")
     for input_file, output_file in mapper:
-        # The code block below is a small and easy example of how to use a ``PathMapper``.
-        # It is recommended that you put your functionality in a helper function, so that
-        # it is more legible and can be unit tested.
-        data = input_file.read_text()
-        frequency = data.count(options.word)
-        output_file.write_text(str(frequency))
+        dicom_file = read_dicom(str(input_file))
+        if dicom_file is None:
+            continue
 
 
 if __name__ == '__main__':
     main()
+
+
+def read_dicom(dicom_path):
+    dataset = None
+    try:
+        dataset = dicom.dcmread(dicom_path)
+    except Exception as ex:
+        print(dicom_path, ex)
+    return dataset
