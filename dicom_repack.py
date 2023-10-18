@@ -65,10 +65,18 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     # Refer to the documentation for more options, examples, and advanced uses e.g.
     # adding a progress bar and parallelism.
     mapper = PathMapper.file_mapper(inputdir, outputdir, glob=f"**/*.{options.fileFilter}")
+    file_sets = {} # Contains all unique dirs along with the file list
     for input_file, output_file in mapper:
-        dicom_file = read_dicom(str(input_file))
-        if dicom_file is None:
-            continue
+        input_file_dir = str(input_file).replace(input_file.name,'')
+        if input_file_dir not in file_sets.keys():
+            file_sets[input_file_dir]=[input_file.name]
+        file_sets[input_file_dir].append(input_file.name)
+
+
+        # dicom_file = read_dicom(str(input_file))
+        # if dicom_file is None:
+        #     continue
+    print(file_sets.keys())
 
 
 if __name__ == '__main__':
@@ -82,3 +90,13 @@ def read_dicom(dicom_path):
     except Exception as ex:
         print(dicom_path, ex)
     return dataset
+
+def merge_dicom_multiframe(dicom_data_set, image, output_file):
+    image = image.replace('.dcm', '')
+    dir_path = os.path.join(str(output_file))
+    os.makedirs(dir_path, exist_ok=True)
+
+    for i, slice in enumerate(dicom_data_set.pixel_array):
+        dicom_data_set.PixelData = slice
+        op_dcm_path = os.path.join(dir_path, f'slice_{i:03n}.dcm')
+        dicom_data_set.save_as(op_dcm_path)
