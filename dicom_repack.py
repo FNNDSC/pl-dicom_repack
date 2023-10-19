@@ -3,9 +3,11 @@
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
 
+import numpy as np
 from chris_plugin import chris_plugin, PathMapper
-
-__version__ = '1.0.0'
+import pydicom as dicom
+import os
+__version__ = '0.0.2'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -17,7 +19,7 @@ DISPLAY_TITLE = r"""
 | |                                     ______       | |                    
 |_|                                    |______|      |_|                    
 
-"""
+"""  + "\t\t -- version " + __version__ + " --\n\n"
 
 
 parser = ArgumentParser(description='!!!CHANGE ME!!! An example ChRIS plugin which '
@@ -71,12 +73,10 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
         if input_file_dir not in file_sets.keys():
             file_sets[input_file_dir]=[input_file.name]
         file_sets[input_file_dir].append(input_file.name)
-
-
-        # dicom_file = read_dicom(str(input_file))
-        # if dicom_file is None:
-        #     continue
-    print(file_sets.keys())
+    for dicom_file_set in file_sets.keys():
+        merge_dicom = merge_dicom_multiframe(dicom_file_set, file_sets[dicom_file_set])
+        op_path = dicom_file_set.replace(str(inputdir),str(outputdir))
+        merge_dicom.save_as(op_path + ".dcm")
 
 
 if __name__ == '__main__':
@@ -91,12 +91,27 @@ def read_dicom(dicom_path):
         print(dicom_path, ex)
     return dataset
 
-def merge_dicom_multiframe(dicom_data_set, image, output_file):
-    image = image.replace('.dcm', '')
-    dir_path = os.path.join(str(output_file))
-    os.makedirs(dir_path, exist_ok=True)
-
-    for i, slice in enumerate(dicom_data_set.pixel_array):
-        dicom_data_set.PixelData = slice
-        op_dcm_path = os.path.join(dir_path, f'slice_{i:03n}.dcm')
-        dicom_data_set.save_as(op_dcm_path)
+def merge_dicom_multiframe(dir_name, dicom_list):
+    slices = len(dicom_list)
+    op_dicom = read_dicom(os.path.join(dir_name, dicom_list[0]))
+    print(type(op_dicom.PixelData))
+    image = dicom.pixel_data_handlers.pylibjpeg_handler.as_array(op_dicom)
+    shape2D = image.shape
+    print(shape2D)
+    _Vnp_3DVol = np.empty((shape2D[0], shape2D[1], slices))
+    i = 0
+    for img in dicom_list:
+        dicom_path = os.path.join(dir_name, img)
+        print(f"--->{dicom_path}<---")
+        dcm = read_dicom(dicom_path)
+        self.lstr_inputFile.append(os.path.basename(img))
+        image = dcm.pixel_array
+        try:
+            _Vnp_3DVol[:, :, i] = image
+        except Exception as e:
+            self.warn(
+                'dcmInsertionFail',
+                '\nFor input DICOM file %s, %s' % (img, str(e)),
+                True)
+        i += 1
+    return _Vnp_3DVol
