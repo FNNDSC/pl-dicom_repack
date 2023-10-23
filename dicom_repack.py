@@ -74,7 +74,7 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
             file_sets[input_file_dir].append(input_file.name)
     for dicom_file_set in file_sets.keys():
         merge_dicom = merge_dicom_multiframe(dicom_file_set, file_sets[dicom_file_set])
-        op_path = dicom_file_set.replace(str(inputdir),str(outputdir)).replace('/',".dcm")
+        op_path = dicom_file_set.replace(str(inputdir),str(outputdir)) + "result.dcm"
         print(op_path)
         merge_dicom.save_as(op_path )
 
@@ -94,22 +94,19 @@ def read_dicom(dicom_path):
 def merge_dicom_multiframe(dir_name, dicom_list):
     slices = len(dicom_list)
     op_dicom = read_dicom(os.path.join(dir_name, dicom_list[0]))
-    image = op_dicom.pixel_array
-    shape3D = image.shape
-    print(shape3D)
-    _Vnp_3DVol = np.empty((slices, shape3D[0], shape3D[1],shape3D[2] ))
+    _Vnp_3DVol = [] #np.zeros((slices, shape3D[0], shape3D[1],shape3D[2] ))
     i = 0
-    for img in dicom_list:
+    for img in sorted(dicom_list):
         dicom_path = os.path.join(dir_name, img)
         #print(f"--->{dicom_path}<---")
         dcm = read_dicom(dicom_path)
         image = dcm.pixel_array
         try:
-            _Vnp_3DVol[i, :, :, :] = image
+            _Vnp_3DVol.append(image)
         except Exception as e:
             print(e)
         i += 1
-    print(_Vnp_3DVol.shape, slices)
-    op_dicom.PixelData = _Vnp_3DVol.tobytes()
     op_dicom.NumberOfFrames = slices
+    op_dicom.PixelData = np.array(_Vnp_3DVol).tobytes()
+
     return op_dicom
