@@ -151,10 +151,10 @@ jobs:
       - name: Upload to ChRIS Store
         id: upload
         if: github.ref_type == 'tag'
-          uses: FNNDSC/upload-chris-plugin@v1
-          with:
-            description_file: /tmp/description.json
-            username: ${{ secrets.CHRISPROJECT_USERNAME }}
-            password: ${{ secrets.CHRISPROJECT_PASSWORD }}
-            chris_url: https://cube.chrisproject.org/api/v1/
-            compute_names: host
+        uses: FNNDSC/upload-chris-plugin@v1
+        with:
+          description_file: /tmp/description.json
+          username: ${{ secrets.CHRISPROJECT_USERNAME }}
+          password: ${{ secrets.CHRISPROJECT_PASSWORD }}
+          chris_url: https://cube.chrisproject.org/api/v1/
+          compute_names: galena
