@@ -7,7 +7,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '0.0.2'
+__version__ = '0.0.4'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -74,9 +74,8 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
             file_sets[input_file_dir].append(input_file.name)
     for dicom_file_set in file_sets.keys():
         merge_dicom = merge_dicom_multiframe(dicom_file_set, file_sets[dicom_file_set])
-        op_path = dicom_file_set.replace(str(inputdir),str(outputdir)) + "result.dcm"
-        print(op_path)
-        merge_dicom.save_as(op_path )
+        op_path = dicom_file_set.replace(str(inputdir),str(outputdir))
+        merge_dicom.save_as(os.path.dirname(op_path) + ".dcm" )
 
 
 if __name__ == '__main__':
