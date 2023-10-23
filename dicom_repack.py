@@ -7,7 +7,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
