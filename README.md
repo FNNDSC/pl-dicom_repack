@@ -5,12 +5,18 @@
 [![ci](https://github.com/FNNDSC/pl-dicom_repack/actions/workflows/ci.yml/badge.svg)](https://github.com/FNNDSC/pl-dicom_repack/actions/workflows/ci.yml)
 
 `pl-dicom_repack` is a [_ChRIS_](https://chrisproject.org/)
-_ds_ plugin which takes in ...  as input files and
-creates ... as output files.
+_ds_ plugin which takes in a list of DICOMs as input files and
+creates a single DICOM as output files.
 
 ## Abstract
 
-...
+This plugin takes in a list of dicom files that belong to a particular series and are
+homogeneous in nature, i.e. each DICOM file must have the exact shape as of the rest of the 
+files in the input list. We use `pydicom`library to read the `pixel_array` contained in each 
+dicom file and "merge" these into a bigger array with an additional dimension.
+
+Additionally, this plugin also modifies the "NumberOfFrames" header tag of the output 
+DICOM with the number of files present in the input directory in a particular series.
 
 ## Installation
 

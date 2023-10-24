@@ -7,7 +7,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -75,9 +75,10 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     for dicom_file_set in file_sets.keys():
         merge_dicom = merge_dicom_multiframe(dicom_file_set, file_sets[dicom_file_set])
         op_path = dicom_file_set.replace(str(inputdir),str(outputdir))
-        op_dicom_filename = os.path.dirname(op_path) + ".dcm"
+        op_dicom_filename = os.path.basename(os.path.normpath(op_path))
+        op_dicom_filepath = os.path.dirname(op_path) + ".dcm"
         print(f"Saving output file: ---->{op_dicom_filename}<----")
-        merge_dicom.save_as(op_dicom_filename)
+        merge_dicom.save_as(op_dicom_filepath)
 
 
 if __name__ == '__main__':
@@ -94,12 +95,13 @@ def read_dicom(dicom_path):
 
 def merge_dicom_multiframe(dir_name, dicom_list):
     slices = len(dicom_list)
+    print(f"Incoming directory location: --->{dir_name}<---")
     op_dicom = read_dicom(os.path.join(dir_name, dicom_list[0]))
     _Vnp_3DVol = [] #np.zeros((slices, shape3D[0], shape3D[1],shape3D[2] ))
     i = 0
     for img in sorted(dicom_list):
         dicom_path = os.path.join(dir_name, img)
-        print(f"Reading dicom file: --->{dicom_path}<---")
+        print(f"Reading dicom file: --->{img}<---")
         dcm = read_dicom(dicom_path)
         image = dcm.pixel_array
         try:
