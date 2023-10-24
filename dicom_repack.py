@@ -40,8 +40,8 @@ parser.add_argument('-V', '--version', action='version',
     parser=parser,
     title='My ChRIS plugin',
     category='',                 # ref. https://chrisstore.co/plugins
-    min_memory_limit='100Mi',    # supported units: Mi, Gi
-    min_cpu_limit='1000m',       # millicores, e.g. "1000m" = 1 CPU core
+    min_memory_limit='2Gi',    # supported units: Mi, Gi
+    min_cpu_limit='10000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
@@ -75,7 +75,9 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     for dicom_file_set in file_sets.keys():
         merge_dicom = merge_dicom_multiframe(dicom_file_set, file_sets[dicom_file_set])
         op_path = dicom_file_set.replace(str(inputdir),str(outputdir))
-        merge_dicom.save_as(os.path.dirname(op_path) + ".dcm" )
+        op_dicom_filename = os.path.dirname(op_path) + ".dcm"
+        print(f"Saving output file: ---->{op_dicom_filename}<----")
+        merge_dicom.save_as(op_dicom_filename)
 
 
 if __name__ == '__main__':
@@ -97,7 +99,7 @@ def merge_dicom_multiframe(dir_name, dicom_list):
     i = 0
     for img in sorted(dicom_list):
         dicom_path = os.path.join(dir_name, img)
-        #print(f"--->{dicom_path}<---")
+        print(f"Reading dicom file: --->{dicom_path}<---")
         dcm = read_dicom(dicom_path)
         image = dcm.pixel_array
         try:
