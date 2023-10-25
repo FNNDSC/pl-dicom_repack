@@ -21,7 +21,7 @@ def get_version(rel_path: str) -> str:
 setup(
     name='dicom_repack',
     version=get_version('dicom_repack.py'),
-    description='A ChRIS plugin to do something awesome',
+    description='A ChRIS plugin to merge individual dicom slices into a single multiframe DICOM',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
     url='https://github.com/FNNDSC/pl-dicom_re',
