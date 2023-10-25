@@ -4,8 +4,8 @@
 FROM docker.io/python:3.12.0-slim-bookworm
 
 LABEL org.opencontainers.image.authors="FNNDSC <dev@babyMRI.org>" \
-      org.opencontainers.image.title="My ChRIS Plugin" \
-      org.opencontainers.image.description="A ChRIS plugin to do something awesome"
+      org.opencontainers.image.title="A DICOM repack plugin" \
+      org.opencontainers.image.description="A ChRIS plugin to merge individual dicom slices into a single multiframe DICOM"
 
 ARG SRCDIR=/usr/local/src/pl-dicom_repack
 WORKDIR ${SRCDIR}

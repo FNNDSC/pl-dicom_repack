@@ -7,7 +7,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -41,7 +41,7 @@ parser.add_argument('-V', '--version', action='version',
     title='My ChRIS plugin',
     category='',                 # ref. https://chrisstore.co/plugins
     min_memory_limit='2Gi',    # supported units: Mi, Gi
-    min_cpu_limit='80000m',       # millicores, e.g. "1000m" = 1 CPU core
+    min_cpu_limit='20000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
