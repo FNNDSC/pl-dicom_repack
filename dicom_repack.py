@@ -7,7 +7,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '1.0.6'
+__version__ = '1.0.7'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -40,8 +40,8 @@ parser.add_argument('-V', '--version', action='version',
     parser=parser,
     title='A DICOM repack plugin',
     category='',                 # ref. https://chrisstore.co/plugins
-    min_memory_limit='3Gi',    # supported units: Mi, Gi
-    min_cpu_limit='40000m',       # millicores, e.g. "1000m" = 1 CPU core
+    min_memory_limit='2Gi',    # supported units: Mi, Gi
+    min_cpu_limit='20000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
@@ -77,7 +77,9 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
         op_path = dicom_file_set.replace(str(inputdir),str(outputdir))
         op_dicom_filename = os.path.basename(os.path.normpath(op_path))
         op_dicom_filepath = os.path.dirname(op_path) + ".dcm"
-        print(f"Saving output file: ---->{op_dicom_filename}<----")
+        op_dicom_dir = op_dicom_filepath.replace(op_dicom_filename, '')
+        os.makedirs(op_dicom_dir,exist_ok=True)
+        print(f"Saving output file: ---->{op_dicom_filename}.dcm<----")
         merge_dicom.save_as(op_dicom_filepath)
 
 
