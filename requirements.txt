@@ -1,3 +1,5 @@
 chris_plugin==0.2.1
 numpy
 pydicom
+pflog==1.2.26
+pftel-client~=1.0.6

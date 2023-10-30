@@ -7,7 +7,8 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-__version__ = '1.1.0'
+from pflog import pflog
+__version__ = '1.1.2'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -44,6 +45,10 @@ parser.add_argument('-V', '--version', action='version',
     min_cpu_limit='4000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
+@pflog.tel_logTime(
+            event       = 'dicom_repack',
+            log         = 'Repack slices of dicoms into one'
+    )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     """
     *ChRIS* plugins usually have two positional arguments: an **input directory** containing
