@@ -8,7 +8,7 @@ from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
 from pflog import pflog
-__version__ = '1.1.2'
+__version__ = '1.1.3'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -31,7 +31,11 @@ parser.add_argument('-t', '--outputType', default='dcm', type=str,
                     help='input file filter glob')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
-
+parser.add_argument(  '--pftelDB',
+                    dest        = 'pftelDB',
+                    default     = '',
+                    type        = str,
+                    help        = 'optional pftel server DB path')
 
 # The main function of this *ChRIS* plugin is denoted by this ``@chris_plugin`` "decorator."
 # Some metadata about the plugin is specified here. There is more metadata specified in setup.py.
