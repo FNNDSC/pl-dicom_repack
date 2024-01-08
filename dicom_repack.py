@@ -8,7 +8,7 @@ from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
 from pflog import pflog
-__version__ = '1.1.3'
+__version__ = '1.1.4'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -73,7 +73,7 @@ def main(options: Namespace, inputdir: Path, outputdir: Path):
     #
     # Refer to the documentation for more options, examples, and advanced uses e.g.
     # adding a progress bar and parallelism.
-    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=f"**/*.{options.fileFilter}")
+    mapper = PathMapper.file_mapper(inputdir, outputdir, glob=f"**/*.{options.fileFilter}", fail_if_empty=False)
     file_sets = {} # Contains all unique dirs along with the file list
     for input_file, output_file in mapper:
         input_file_dir = str(input_file).replace(input_file.name,'')
