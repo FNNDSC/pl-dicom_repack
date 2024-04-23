@@ -8,7 +8,7 @@ from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
 from pflog import pflog
-__version__ = '1.1.6'
+__version__ = '1.1.8'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
