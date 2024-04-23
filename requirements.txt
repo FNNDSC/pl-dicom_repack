@@ -3,3 +3,7 @@ numpy
 pydicom
 pflog==1.2.26
 pftel-client~=1.0.6
+# for bug fix on transfer syntax errors
+pylibjpeg
+pylibjpeg-libjpeg
+python-gdcm
