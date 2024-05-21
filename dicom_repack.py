@@ -8,7 +8,7 @@ from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
 from pflog import pflog
-__version__ = '1.1.8'
+__version__ = '1.2.0'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -45,7 +45,7 @@ parser.add_argument(  '--pftelDB',
     parser=parser,
     title='A DICOM repack plugin',
     category='',                 # ref. https://chrisstore.co/plugins
-    min_memory_limit='4Gi',    # supported units: Mi, Gi
+    min_memory_limit='8Gi',    # supported units: Mi, Gi
     min_cpu_limit='4000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
