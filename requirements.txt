@@ -1,4 +1,4 @@
-chris_plugin==0.2.1
+chris_plugin>=0.3.0
 numpy
 pydicom==2.1.2
 pflog==1.2.26

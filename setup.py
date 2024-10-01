@@ -24,7 +24,7 @@ setup(
     description='A ChRIS plugin to merge individual dicom slices into a single multiframe DICOM',
     author='FNNDSC',
     author_email='dev@babyMRI.org',
-    url='https://github.com/FNNDSC/pl-dicom_re',
+    url='https://github.com/FNNDSC/pl-dicom_repack',
     py_modules=['dicom_repack'],
     install_requires=['chris_plugin'],
     license='MIT',
