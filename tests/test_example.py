@@ -1,7 +1,7 @@
 from pathlib import Path
 import pytest
 
-from dicom_repack import parser, main
+from dicom_repack import parser
 
 
 def test_help_output_documents_every_option(capsys):
