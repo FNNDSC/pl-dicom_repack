@@ -2,13 +2,12 @@
 
 from pathlib import Path
 from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
-
 import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 import os
-from pflog import pflog
-__version__ = '1.2.6'
+
+__version__ = '1.2.7'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
@@ -31,11 +30,7 @@ parser.add_argument('-t', '--outputType', default='dcm', type=str,
                     help='input file filter glob')
 parser.add_argument('-V', '--version', action='version',
                     version=f'%(prog)s {__version__}')
-parser.add_argument(  '--pftelDB',
-                    dest        = 'pftelDB',
-                    default     = '',
-                    type        = str,
-                    help        = 'optional pftel server DB path')
+
 
 # The main function of this *ChRIS* plugin is denoted by this ``@chris_plugin`` "decorator."
 # Some metadata about the plugin is specified here. There is more metadata specified in setup.py.
@@ -49,10 +44,6 @@ parser.add_argument(  '--pftelDB',
     min_cpu_limit='2000m',       # millicores, e.g. "1000m" = 1 CPU core
     min_gpu_limit=0              # set min_gpu_limit=1 to enable GPU
 )
-@pflog.tel_logTime(
-            event       = 'dicom_repack',
-            log         = 'Repack slices of dicoms into one'
-    )
 def main(options: Namespace, inputdir: Path, outputdir: Path):
     """
     *ChRIS* plugins usually have two positional arguments: an **input directory** containing
@@ -105,22 +96,28 @@ def read_dicom(dicom_path):
     return dataset
 
 def merge_dicom_multiframe(dir_name, dicom_list):
-    slices = len(dicom_list)
     print(f"Incoming directory location: --->{dir_name}<---")
+    slices = len(dicom_list)
     op_dicom = read_dicom(os.path.join(dir_name, dicom_list[0]))
-    _Vnp_3DVol = [] #np.zeros((slices, shape3D[0], shape3D[1],shape3D[2] ))
-    i = 0
-    for img in sorted(dicom_list):
-        dicom_path = os.path.join(dir_name, img)
-        print(f"Reading dicom file: --->{img}<---")
-        dcm = read_dicom(dicom_path)
-        image = dcm.pixel_array
-        try:
-            _Vnp_3DVol.append(image)
-        except Exception as e:
-            print(e)
-        i += 1
-    op_dicom.NumberOfFrames = slices
-    op_dicom.PixelData = np.array(_Vnp_3DVol).tobytes()
 
+    pixel_chunks = []
+    expected_len = None
+    for img in sorted(dicom_list):
+        print(f"Reading dicom file: --->{img}<---")
+        dcm = read_dicom(os.path.join(dir_name, img))
+        if dcm is None:
+            continue
+        chunk = dcm.PixelData
+        if expected_len is None:
+            expected_len = len(chunk)
+        elif len(chunk) != expected_len:
+            raise ValueError(
+                f"Slice {img} has {len(chunk)} pixel bytes, expected {expected_len} "
+                f"— slices are not uniform, aborting merge to avoid corrupt output"
+            )
+        pixel_chunks.append(chunk)
+        del dcm
+
+    op_dicom.NumberOfFrames = slices
+    op_dicom.PixelData = b''.join(pixel_chunks)
     return op_dicom
