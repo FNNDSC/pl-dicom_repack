@@ -162,6 +162,34 @@ class TestRoundTrip:
         assert ds.NumberOfFrames == 6
         assert np.array_equal(pixels, np.concatenate(frames))
 
+    def test_natural_sort_non_zero_padded_filenames(self, tmp_path):
+        """Verify that numbered slices are repacked in natural numeric order."""
+        series_dir = tmp_path / 'in'
+        out = tmp_path / 'out.dcm'
+
+        # Deliberately create slices out of numerical order.
+        slice_numbers = [10, 2, 20, 1, 11, 3]
+
+        for number in slice_numbers:
+            pixels = np.full((6, 4), number, dtype=np.uint16)
+
+            make_slice(
+                series_dir / f'slice{number}.dcm',
+                pixels,
+                instance=number
+            )
+
+        assert repack(series_dir, out) == 6
+
+        ds, pixels = read_out(out)
+
+        assert ds.NumberOfFrames == 6
+
+        # Check the actual output frame order, not just filenames.
+        assert [int(frame[0, 0]) for frame in pixels] == [
+            1, 2, 3, 10, 11, 20
+        ]
+
 
 class TestCompressedInput:
 
