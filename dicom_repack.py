@@ -13,7 +13,7 @@ import pydicom as dicom
 from pydicom.uid import ExplicitVRLittleEndian
 import re
 
-__version__ = '1.3.0'
+__version__ = '1.3.1'
 
 DISPLAY_TITLE = r"""
        _           _ _                                                 _    
