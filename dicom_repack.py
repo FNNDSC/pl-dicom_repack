@@ -11,6 +11,7 @@ import numpy as np
 from chris_plugin import chris_plugin, PathMapper
 import pydicom as dicom
 from pydicom.uid import ExplicitVRLittleEndian
+import re
 
 __version__ = '1.3.0'
 
@@ -76,6 +77,14 @@ def read_header(dicom_path):
         print(f"Skipping unreadable file {dicom_path}: {ex}")
         return None
 
+def natural_sort_key(filename):
+    """Sort files by natural order.Python's default sorted() performs lexicographical (alphabetical) sorting
+       rather than numerical sorting."""
+    return [
+        int(part) if part.isdigit() else part.lower()
+        for part in re.split(r'(\d+)', filename)
+    ]
+
 
 def is_native(ds) -> bool:
     """True if PixelData is stored as plain (unencapsulated) pixel bytes."""
@@ -94,7 +103,7 @@ def plan_series(dir_name, dicom_list) -> SeriesPlan:
     transfer_syntaxes = set()
     all_native = True
 
-    for name in sorted(dicom_list):
+    for name in sorted(dicom_list, key=natural_sort_key):
         path = Path(dir_name) / name
         ds = read_header(path)
         if ds is None:
